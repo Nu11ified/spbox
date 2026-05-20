@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SPBox POC</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="panel" aria-label="SPBox POC panel">
+      <header class="topbar">
+        <div>
+          <h1>SPBox POC</h1>
+          <p id="notice">Ready</p>
+        </div>
+        <button id="close" class="icon-button" type="button" title="Close">x</button>
+      </header>
+
+      <section class="summary" aria-label="Economy summary">
+        <div>
+          <span>Cash</span>
+          <strong id="cash">$0</strong>
+        </div>
+        <div>
+          <span>Bank</span>
+          <strong id="bank">$0</strong>
+        </div>
+        <div>
+          <span>Job</span>
+          <strong id="job">civilian</strong>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="tool">
+          <h2>Economy</h2>
+          <label>
+            Amount
+            <input id="amount" type="number" min="1" value="250">
+          </label>
+          <div class="actions">
+            <button data-action="deposit" type="button">Deposit</button>
+            <button data-action="withdraw" type="button">Withdraw</button>
+            <button data-action="paycheck" type="button">Paycheck</button>
+            <button data-action="maxMoney" type="button">Max</button>
+          </div>
+          <label>
+            Job
+            <select id="job-select">
+              <option value="civilian">Civilian</option>
+              <option value="police">Police</option>
+              <option value="mechanic">Mechanic</option>
+            </select>
+          </label>
+          <button data-action="setJob" type="button">Set Job</button>
+        </div>
+
+        <div class="tool">
+          <h2>Vehicle</h2>
+          <label>
+            Model
+            <select id="vehicle"></select>
+          </label>
+          <div class="actions">
+            <button data-action="spawnVehicle" type="button">Spawn</button>
+            <button data-action="repairVehicle" type="button">Repair</button>
+          </div>
+        </div>
+
+        <div class="tool">
+          <h2>World</h2>
+          <label>
+            Weather
+            <select id="weather"></select>
+          </label>
+          <label>
+            Hour
+            <input id="hour" type="number" min="0" max="23" value="12">
+          </label>
+          <div class="actions">
+            <button data-action="setWeather" type="button">Weather</button>
+            <button data-action="setTime" type="button">Time</button>
+          </div>
+        </div>
+
+        <div class="tool">
+          <h2>Player</h2>
+          <div class="actions">
+            <button data-action="spawnPlayer" type="button">Respawn</button>
+            <button data-action="teleportWaypoint" type="button">Waypoint</button>
+            <button id="noclip" data-action="toggleNoclip" type="button">Noclip</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "spbox",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "generate:spacetime-bindings": "node scripts/generate-spacetime-bindings.mjs",
+    "install:qbcore-demo": "npm run build && node scripts/install-qbcore-demo-resources.mjs",
+    "import:legacy-resource": "npm run build && node scripts/import-legacy-resource.mjs",
+    "import:legacy-sql": "npm run build && node scripts/import-legacy-sql.mjs",
+    "smoke:admin-local": "node dist/src/admin/local-integration-smoke.js",
+    "smoke:fxserver-core": "node scripts/run-fxserver-smoke.mjs",
+    "smoke:production-core": "node dist/src/admin/production-smoke.js",
+    "start:spacetime-demo": "node scripts/start-spacetime-demo.mjs",
+    "start:admin": "node dist/src/admin/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify:fivem-deployment": "node scripts/verify-fivem-deployment.mjs",
+    "verify:fxserver-smoke-log": "node scripts/verify-fxserver-smoke-log.mjs",
+    "verify:operations-runbook": "node scripts/verify-operations-runbook.mjs",
+    "verify:production-readiness": "node scripts/verify-production-readiness.mjs",
+    "verify:spacetime-bindings": "node scripts/verify-spacetime-bindings.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  },
+  "dependencies": {
+    "spacetimedb": "^2.2.0"
+  }
+}

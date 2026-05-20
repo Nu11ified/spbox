@@ -1,0 +1,163 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, Arial, sans-serif;
+  background: transparent;
+  color: #f6f8fb;
+}
+
+.panel {
+  display: none;
+  position: fixed;
+  top: 48px;
+  right: 48px;
+  width: min(720px, calc(100vw - 48px));
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(20, 24, 31, 0.94);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+}
+
+.panel.visible {
+  display: block;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+p {
+  margin-top: 4px;
+  color: #a9b4c4;
+  font-size: 13px;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 0;
+  background: #2d3442;
+  color: #fff;
+  cursor: pointer;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.summary div,
+.tool {
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.summary div {
+  padding: 10px;
+}
+
+.summary span {
+  display: block;
+  color: #9eabbc;
+  font-size: 12px;
+}
+
+.summary strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tool {
+  padding: 12px;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 10px;
+  color: #bdc7d5;
+  font-size: 12px;
+}
+
+input,
+select,
+button {
+  min-height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: #111720;
+  color: #f6f8fb;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0 10px;
+}
+
+button {
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+button:hover,
+button.active {
+  border-color: #4aa3ff;
+  background: #15375c;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    top: 16px;
+    right: 16px;
+    width: calc(100vw - 32px);
+  }
+
+  .summary,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

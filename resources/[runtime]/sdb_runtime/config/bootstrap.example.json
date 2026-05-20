@@ -1,0 +1,6 @@
+{
+  "serverId": "local-dev",
+  "spacetimeDbUri": "wss://maincloud.spacetimedb.com",
+  "databaseName": "sdb_runtime",
+  "signingKeyPath": "config/server.key"
+}

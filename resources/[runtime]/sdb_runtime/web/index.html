@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SDB Runtime</title>
+    <style>
+      body {
+        display: none;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: #f4f4f5;
+        background: rgba(18, 18, 20, 0.92);
+      }
+
+      body.visible {
+        display: block;
+      }
+
+      main {
+        width: 360px;
+        min-height: 280px;
+        padding: 16px;
+      }
+
+      button {
+        width: 100%;
+        height: 40px;
+        border: 0;
+        color: #111;
+        background: #f4f4f5;
+        font-weight: 700;
+      }
+
+      ul {
+        list-style: none;
+        margin: 8px 0;
+        padding-left: 12px;
+      }
+
+      li {
+        margin: 6px 0;
+      }
+
+      .menu-action {
+        text-align: left;
+      }
+
+      .payload-field {
+        display: block;
+        margin: 4px 0;
+        color: #d4d4d8;
+        font-size: 12px;
+      }
+
+      .payload-field input {
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 2px;
+      }
+
+      .result {
+        min-height: 20px;
+        white-space: pre-wrap;
+      }
+
+      .result.success {
+        color: #86efac;
+      }
+
+      .result.error {
+        color: #fca5a5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SDB Runtime</h1>
+      <nav id="menu-tree"></nav>
+      <button id="close">Close</button>
+      <pre id="result" class="result"></pre>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

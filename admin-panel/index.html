@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SDB Runtime Admin</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <strong>SDB Runtime</strong>
+          <span id="server-label">server-1</span>
+        </div>
+        <nav>
+          <button data-view="dashboard" class="active">Dashboard</button>
+          <button data-view="permissions">Permissions</button>
+          <button data-view="menus">Menus</button>
+          <button data-view="plugins">Plugins</button>
+          <button data-view="deployments">Deployments</button>
+          <button data-view="economy">Economy</button>
+          <button data-view="gameplay">Gameplay</button>
+          <button data-view="audit">Audit</button>
+        </nav>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <label>
+            Server
+            <input id="server-id" value="server-1">
+          </label>
+          <button id="refresh">Refresh</button>
+        </header>
+
+        <section id="view-dashboard" class="view active">
+          <div class="grid">
+            <section class="panel">
+              <h2>Config</h2>
+              <form id="config-form" class="stack">
+                <input name="namespace" placeholder="namespace" value="economy">
+                <input name="key" placeholder="key" value="enabled">
+                <input name="value" placeholder="value" value="true">
+                <button>Set Config</button>
+              </form>
+              <pre id="config-output"></pre>
+            </section>
+            <section class="panel">
+              <h2>Runtime</h2>
+              <pre id="health-output"></pre>
+              <pre id="dashboard-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-permissions" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Principal</h2>
+              <form id="principal-form" class="stack">
+                <input name="id" placeholder="principal id" value="player:license:abc">
+                <input name="type" placeholder="type" value="player">
+                <input name="externalId" placeholder="external id" value="license:abc">
+                <input name="name" placeholder="name" value="Ada">
+                <button>Save Principal</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Grant</h2>
+              <form id="grant-form" class="stack">
+                <input name="principalId" placeholder="principal id" value="player:license:abc">
+                <input name="permissionKey" placeholder="permission" value="menu.vehicle.repair">
+                <select name="effect">
+                  <option value="allow">allow</option>
+                  <option value="deny">deny</option>
+                </select>
+                <input name="source" placeholder="source" value="manual">
+                <button>Save Grant</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Permission</h2>
+              <form id="permission-definition-form" class="stack">
+                <input name="id" placeholder="permission id" value="perm:vehicle.repair">
+                <input name="key" placeholder="key" value="vehicle.repair">
+                <input name="description" placeholder="description" value="Repair vehicles">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <button>Save Permission</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>ACE Rule</h2>
+              <form id="ace-rule-form" class="stack">
+                <input name="id" placeholder="rule id" value="ace:vehicle.repair">
+                <input name="permissionKey" placeholder="permission" value="vehicle.repair">
+                <input name="aceObject" placeholder="ACE object" value="sdb.vehicle.repair">
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <select name="mode">
+                  <option value="allow_only">allow_only</option>
+                  <option value="allow_and_deny">allow_and_deny</option>
+                </select>
+                <button>Save ACE Rule</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Policy</h2>
+              <form id="policy-form" class="stack">
+                <input name="id" placeholder="policy id" value="staff-give-limit">
+                <input name="permissionKey" placeholder="permission" value="economy.admin.give_money">
+                <select name="constraintType">
+                  <option value="max_amount">max_amount</option>
+                  <option value="requires_state">requires_state</option>
+                  <option value="namespace_scope">namespace_scope</option>
+                </select>
+                <input name="constraintJson" placeholder="constraint json" value='{"amount":10000,"currency":"cash"}'>
+                <input name="priority" placeholder="priority" value="10">
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Policy</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Discord Sync</h2>
+              <form id="discord-role-sync-form" class="stack">
+                <input name="guildId" placeholder="guild id" value="guild-1">
+                <input name="serverId" placeholder="server id" value="server-1">
+                <input name="roleMappingsJson" placeholder="role mappings json" value='[{"discordRoleId":"role-admin","targetPrincipalId":"group.admin"}]'>
+                <input name="membersJson" placeholder="members json" value='[{"userId":"user-1","displayName":"Ada","roleIds":["role-admin"]}]'>
+                <input name="edgeTtlMs" placeholder="edge ttl ms">
+                <button>Sync Discord Roles</button>
+              </form>
+              <pre id="discord-output"></pre>
+            </section>
+            <section class="panel">
+              <h2>Snapshot</h2>
+              <button id="refresh-permissions">Refresh Permissions</button>
+              <pre id="permission-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-menus" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Definition</h2>
+              <form id="menu-definition-form" class="stack">
+                <input name="id" placeholder="menu id" value="vehicle.repair.menu">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="label" placeholder="label" value="Repair Vehicle">
+                <input name="parentId" placeholder="parent id" value="vehicle">
+                <input name="icon" placeholder="icon" value="wrench">
+                <input name="order" placeholder="order" value="10">
+                <input name="requiredPermission" placeholder="permission" value="menu.vehicle.repair">
+                <input name="actionId" placeholder="action id" value="vehicle.repair">
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <input name="visibilityPolicyId" placeholder="visibility policy">
+                <button>Save Definition</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Action</h2>
+              <form id="menu-action-form" class="stack">
+                <input name="id" placeholder="action id" value="vehicle.repair">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <select name="actionType">
+                  <option value="runtime_action">runtime_action</option>
+                  <option value="call_reducer">call_reducer</option>
+                  <option value="trigger_server_handler">trigger_server_handler</option>
+                  <option value="trigger_client_event">trigger_client_event</option>
+                </select>
+                <input name="reducerName" placeholder="reducer name" value="repair_vehicle">
+                <input name="payloadSchemaJson" placeholder="payload schema json" value='{"type":"object"}'>
+                <select name="confirmationRequired">
+                  <option value="false">no confirmation</option>
+                  <option value="true">confirmation required</option>
+                </select>
+                <select name="auditLevel">
+                  <option value="standard">standard</option>
+                  <option value="high">high</option>
+                  <option value="none">none</option>
+                </select>
+                <input name="requiredPermission" placeholder="permission" value="menu.vehicle.repair">
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Action</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Command</h2>
+              <form id="runtime-command-form" class="stack">
+                <input name="id" placeholder="command id" value="command.vehicle.repair">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="name" placeholder="command name" value="sdb_repair">
+                <input name="aliasesJson" placeholder="aliases json" value='["repairveh"]'>
+                <input name="actionId" placeholder="action id" value="vehicle.repair">
+                <input name="requiredPermission" placeholder="permission" value="command.vehicle.repair">
+                <input name="payloadSchemaJson" placeholder="payload schema json" value='{"type":"object"}'>
+                <select name="auditLevel">
+                  <option value="standard">standard</option>
+                  <option value="high">high</option>
+                  <option value="none">none</option>
+                </select>
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Command</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Panel</h2>
+              <form id="runtime-panel-form" class="stack">
+                <input name="id" placeholder="panel id" value="panel.mechanic.work_orders">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="title" placeholder="title" value="Work Orders">
+                <input name="route" placeholder="route" value="/plugins/mechanic/work-orders">
+                <input name="requiredPermission" placeholder="permission" value="mechanic.repair">
+                <input name="icon" placeholder="icon" value="clipboard-list">
+                <input name="order" placeholder="order" value="20">
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Panel</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Visibility</h2>
+              <form id="menu-visibility-policy-form" class="stack">
+                <input name="id" placeholder="policy id" value="staff-only">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="policyJson" placeholder="policy json" value='{"requiredDuty":true}'>
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Visibility</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Session</h2>
+              <form id="menu-session-form" class="stack">
+                <input name="sessionId" placeholder="session id" value="session-1">
+                <input name="playerId" placeholder="player id" value="player:1">
+                <input name="cacheVersion" placeholder="cache version" value="1">
+                <button name="intent" value="open">Open Session</button>
+                <button name="intent" value="close">Close Session</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Registry</h2>
+              <button id="refresh-menus">Refresh Menus</button>
+              <pre id="menu-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-plugins" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Plugin</h2>
+              <form id="plugin-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="name" placeholder="name" value="Mechanic Core">
+                <input name="version" placeholder="version" value="1.0.0">
+                <button name="intent" value="install">Install</button>
+                <button name="intent" value="enable">Enable</button>
+                <button name="intent" value="disable">Disable</button>
+                <button name="intent" value="uninstall">Uninstall</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Package</h2>
+              <form id="plugin-package-form" class="stack">
+                <input name="packageId" placeholder="package id" value="marketplace:mechanic_core">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="version" placeholder="version" value="1.0.0">
+                <input name="source" placeholder="source" value="https://plugins.example.test/mechanic_core">
+                <input name="publisher" placeholder="publisher" value="SDB Labs">
+                <select name="trustLevel">
+                  <option value="marketplace">marketplace</option>
+                  <option value="community">community</option>
+                  <option value="local">local</option>
+                </select>
+                <input name="signerId" placeholder="signer id" value="trusted-marketplace">
+                <input name="signature" placeholder="signature" value="sig:mechanic">
+                <input name="manifestHash" placeholder="manifest hash" value="sha256:manifest">
+                <input name="manifestJson" placeholder="manifest json" value='{"pluginId":"mechanic_core","name":"Mechanic Core","version":"1.0.0"}'>
+                <button>Install Package</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Import Plan</h2>
+              <form id="plugin-import-plan-form" class="stack">
+                <input name="planJson" placeholder="spbox-plugin-import entry json" value='{"package":{"packageId":"legacy:qb-example","pluginId":"qb-example","version":"1.0.0","source":"local:qb-example","publisher":"legacy-resource-importer","trustLevel":"local","signerId":"local-legacy-importer","signature":"local:qb-example:1.0.0","manifestHash":"sha256:pending-local-import","manifest":{"pluginId":"qb-example","name":"qb-example","version":"1.0.0"}}}'>
+                <select name="enableAfterInstall">
+                  <option value="true">enable after install</option>
+                  <option value="false">install only</option>
+                </select>
+                <button>Install Import Plan</button>
+              </form>
+              <pre id="plugin-import-output"></pre>
+            </section>
+            <section class="panel">
+              <h2>Config</h2>
+              <form id="plugin-config-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="serverId" placeholder="server id" value="server-1">
+                <input name="key" placeholder="key" value="hourlyRate">
+                <input name="value" placeholder="value" value="75">
+                <input name="version" placeholder="version" value="1">
+                <button>Save Config</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Runtime</h2>
+              <form id="plugin-runtime-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="serverId" placeholder="server id" value="server-1">
+                <select name="status">
+                  <option value="loaded">loaded</option>
+                  <option value="disabled">disabled</option>
+                  <option value="failed">failed</option>
+                  <option value="unloaded">unloaded</option>
+                </select>
+                <input name="errorMessage" placeholder="error message">
+                <button>Save Runtime</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Schema</h2>
+              <form id="plugin-schema-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="entityType" placeholder="entity type" value="work_order">
+                <input name="schemaVersion" placeholder="schema version" value="1">
+                <input name="schemaJson" placeholder="schema json" value='{"type":"object","required":["status"]}'>
+                <input name="migrationPlanJson" placeholder="migration plan json" value="[]">
+                <select name="status">
+                  <option value="active">active</option>
+                  <option value="pending">pending</option>
+                  <option value="disabled">disabled</option>
+                </select>
+                <button>Register Schema</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Entity</h2>
+              <form id="plugin-entity-form" class="stack">
+                <input name="id" placeholder="entity id" value="entity-1">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="entityType" placeholder="entity type" value="work_order">
+                <input name="ownerType" placeholder="owner type" value="character">
+                <input name="ownerId" placeholder="owner id" value="char:1">
+                <input name="dataJson" placeholder="data json" value='{"status":"open"}'>
+                <button>Save Entity</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Data</h2>
+              <form id="plugin-data-search-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="entityType" placeholder="entity type" value="work_order">
+                <button>Search Data</button>
+              </form>
+              <pre id="plugin-data-output"></pre>
+            </section>
+            <section class="panel">
+              <h2>Registry</h2>
+              <button id="refresh-plugin-registry">Refresh Registry</button>
+              <pre id="plugin-registry-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-deployments" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Deployment</h2>
+              <form id="deployment-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="bundleId" placeholder="bundle id" value="bundle-1">
+                <input name="bundleBytes" placeholder="bundle bytes">
+                <input name="requestedBy" placeholder="requested by" value="owner:1">
+                <button name="intent" value="request">Request</button>
+                <button name="intent" value="request-artifact">Request Artifact</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Approval</h2>
+              <form id="deployment-control-form" class="stack">
+                <input name="deploymentId" placeholder="deployment id">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="actorId" placeholder="actor" value="owner:1">
+                <input name="reason" placeholder="reason" value="disabled from admin">
+                <button name="intent" value="approve">Approve</button>
+                <button name="intent" value="fail">Mark Failed</button>
+                <button name="intent" value="rollback">Rollback</button>
+                <button name="intent" value="kill">Kill</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Signer</h2>
+              <form id="signer-control-form" class="stack">
+                <input name="signerId" placeholder="signer id" value="trusted-signer">
+                <input name="actorId" placeholder="actor" value="owner:1">
+                <input name="reason" placeholder="reason" value="compromised signer">
+                <button name="intent" value="revoke-bundle-signer">Revoke Bundle Signer</button>
+                <button name="intent" value="revoke-package-signer">Revoke Package Signer</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Capability</h2>
+              <form id="capability-check-form" class="stack">
+                <input name="pluginId" placeholder="plugin id" value="admin_tools">
+                <input name="capabilityKey" placeholder="capability" value="vehicle.repair">
+                <button>Check Capability</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Snapshot</h2>
+              <button id="refresh-deployments">Refresh Deployments</button>
+              <pre id="deployment-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-economy" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Account</h2>
+              <form id="economy-account-form" class="stack">
+                <input name="id" placeholder="account id" value="acct:char:1:cash">
+                <input name="ownerType" placeholder="owner type" value="character">
+                <input name="ownerId" placeholder="owner id" value="char:1">
+                <input name="currency" placeholder="currency" value="cash">
+                <input name="balance" placeholder="balance" value="1000">
+                <button>Create Account</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Accounts</h2>
+              <form id="economy-account-search-form" class="stack">
+                <input name="ownerType" placeholder="owner type">
+                <input name="ownerId" placeholder="owner id">
+                <input name="currency" placeholder="currency" value="cash">
+                <input name="status" placeholder="status" value="active">
+                <button>Search Accounts</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Transactions</h2>
+              <form id="economy-transaction-search-form" class="stack">
+                <input name="accountId" placeholder="account id" value="acct:char:1:cash">
+                <input name="actorId" placeholder="actor id">
+                <input name="type" placeholder="type">
+                <input name="status" placeholder="status">
+                <button>Search Transactions</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Ledger</h2>
+              <form id="economy-ledger-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:1">
+                <button>Get Ledger</button>
+              </form>
+              <form id="economy-suspicious-form" class="stack">
+                <input name="accountId" placeholder="account id">
+                <input name="actorId" placeholder="actor id">
+                <input name="type" placeholder="type">
+                <input name="minAmount" placeholder="min amount" value="10000">
+                <input name="from" placeholder="from ISO date">
+                <input name="to" placeholder="to ISO date">
+                <button>Find Suspicious</button>
+              </form>
+              <form id="economy-statement-form" class="stack">
+                <input name="accountId" placeholder="account id" value="acct:char:1:cash">
+                <input name="from" placeholder="from ISO date">
+                <input name="to" placeholder="to ISO date">
+                <button name="format" value="json">Get Statement</button>
+                <button name="format" value="csv">Export CSV</button>
+              </form>
+              <button id="refresh-economy-limits">Refresh Limits</button>
+              <pre id="economy-read-output"></pre>
+            </section>
+            <section class="panel">
+              <h2>Limit</h2>
+              <form id="economy-limit-form" class="stack">
+                <input name="id" placeholder="limit id" value="limit:transfer-small">
+                <input name="permissionKey" placeholder="permission" value="economy.transfer">
+                <input name="actionType" placeholder="action type" value="economy.transfer">
+                <input name="limitJson" placeholder="limit json" value='{"max_amount":200,"allowed_account_owner_types":["character","business"]}'>
+                <select name="enabled">
+                  <option value="true">enabled</option>
+                  <option value="false">disabled</option>
+                </select>
+                <button>Save Limit</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Transfer</h2>
+              <form id="economy-transfer-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:1">
+                <input name="actorId" placeholder="actor id" value="admin:1">
+                <input name="fromAccountId" placeholder="from account" value="acct:char:1:cash">
+                <input name="toAccountId" placeholder="to account" value="acct:char:2:cash">
+                <input name="amount" placeholder="amount" value="250">
+                <input name="reason" placeholder="reason" value="admin_transfer">
+                <input name="idempotencyKey" placeholder="idempotency key" value="transfer-1">
+                <button>Transfer</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Cash</h2>
+              <form id="economy-cash-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:cash">
+                <input name="actorId" placeholder="actor id" value="admin:1">
+                <input name="accountId" placeholder="account id" value="acct:char:1:cash">
+                <input name="amount" placeholder="amount" value="100">
+                <input name="reason" placeholder="reason" value="cash">
+                <input name="idempotencyKey" placeholder="idempotency key" value="cash-1">
+                <button name="intent" value="deposit">Deposit</button>
+                <button name="intent" value="withdraw">Withdraw</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Adjustment</h2>
+              <form id="economy-adjustment-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:adjust">
+                <input name="actorId" placeholder="actor id" value="admin:1">
+                <input name="accountId" placeholder="account id" value="acct:char:1:cash">
+                <select name="direction">
+                  <option value="credit">credit</option>
+                  <option value="debit">debit</option>
+                </select>
+                <input name="amount" placeholder="amount" value="25">
+                <input name="reason" placeholder="reason" value="correction">
+                <input name="idempotencyKey" placeholder="idempotency key" value="adjust-1">
+                <button>Adjust</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Salary</h2>
+              <form id="economy-salary-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:salary">
+                <input name="actorId" placeholder="actor id" value="admin:payroll">
+                <input name="employerAccountId" placeholder="employer account" value="acct:business:cash">
+                <input name="employeeAccountId" placeholder="employee account" value="acct:char:1:cash">
+                <input name="amount" placeholder="amount" value="1200">
+                <input name="reason" placeholder="reason" value="weekly_payroll">
+                <input name="idempotencyKey" placeholder="idempotency key" value="salary-1">
+                <button>Pay Salary</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Fine</h2>
+              <form id="economy-fine-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:fine">
+                <input name="actorId" placeholder="actor id" value="admin:police">
+                <input name="playerAccountId" placeholder="player account" value="acct:char:1:cash">
+                <input name="destinationAccountId" placeholder="destination account" value="acct:government:cash">
+                <input name="amount" placeholder="amount" value="250">
+                <input name="reason" placeholder="reason" value="traffic_fine">
+                <input name="idempotencyKey" placeholder="idempotency key" value="fine-1">
+                <button>Fine Player</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Tax</h2>
+              <form id="economy-tax-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:tax">
+                <input name="actorId" placeholder="actor id" value="admin:tax">
+                <input name="payerAccountId" placeholder="payer account" value="acct:business:cash">
+                <input name="governmentAccountId" placeholder="government account" value="acct:government:cash">
+                <input name="amount" placeholder="amount" value="500">
+                <input name="reason" placeholder="reason" value="sales_tax">
+                <input name="idempotencyKey" placeholder="idempotency key" value="tax-1">
+                <button>Charge Tax</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Payout</h2>
+              <form id="economy-business-payout-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:payout">
+                <input name="actorId" placeholder="actor id" value="admin:owner">
+                <input name="businessAccountId" placeholder="business account" value="acct:business:cash">
+                <input name="destinationAccountId" placeholder="destination account" value="acct:owner:cash">
+                <input name="amount" placeholder="amount" value="750">
+                <input name="reason" placeholder="reason" value="owner_draw">
+                <input name="idempotencyKey" placeholder="idempotency key" value="payout-1">
+                <button>Pay Payout</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Invoice</h2>
+              <form id="economy-invoice-form" class="stack">
+                <input name="id" placeholder="invoice id" value="invoice:repair-1">
+                <input name="issuerAccountId" placeholder="issuer account" value="acct:mechanic:cash">
+                <input name="payerAccountId" placeholder="payer account" value="acct:char:1:cash">
+                <input name="amount" placeholder="amount" value="300">
+                <input name="currency" placeholder="currency" value="cash">
+                <input name="reason" placeholder="reason" value="repair">
+                <input name="issuedBy" placeholder="issued by" value="player:mechanic">
+                <input name="idempotencyKey" placeholder="idempotency key" value="issue-invoice-1">
+                <input name="dueAt" placeholder="due at ISO date">
+                <button>Issue Invoice</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Pay Invoice</h2>
+              <form id="economy-invoice-payment-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:invoice-payment-1">
+                <input name="actorId" placeholder="actor id" value="player:customer">
+                <input name="invoiceId" placeholder="invoice id" value="invoice:repair-1">
+                <input name="idempotencyKey" placeholder="idempotency key" value="pay-invoice-1">
+                <button>Pay Invoice</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Buy Item</h2>
+              <form id="economy-item-purchase-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:buy">
+                <input name="actorId" placeholder="actor id" value="player:buyer">
+                <input name="buyerAccountId" placeholder="buyer account" value="acct:char:1:cash">
+                <input name="sellerAccountId" placeholder="seller account" value="acct:shop:cash">
+                <input name="amount" placeholder="amount" value="40">
+                <input name="itemKey" placeholder="item key" value="repair_kit">
+                <input name="quantity" placeholder="quantity" value="2">
+                <input name="idempotencyKey" placeholder="idempotency key" value="buy-1">
+                <button>Buy Item</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Sell Item</h2>
+              <form id="economy-item-sale-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:sell">
+                <input name="actorId" placeholder="actor id" value="player:seller">
+                <input name="sellerAccountId" placeholder="seller account" value="acct:char:1:cash">
+                <input name="buyerAccountId" placeholder="buyer account" value="acct:shop:cash">
+                <input name="amount" placeholder="amount" value="30">
+                <input name="itemKey" placeholder="item key" value="scrap">
+                <input name="quantity" placeholder="quantity" value="3">
+                <input name="idempotencyKey" placeholder="idempotency key" value="sell-1">
+                <button>Sell Item</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Void</h2>
+              <form id="economy-void-form" class="stack">
+                <input name="transactionId" placeholder="transaction id" value="tx:void">
+                <input name="actorId" placeholder="actor id" value="admin:1">
+                <input name="voidedTransactionId" placeholder="voided transaction id" value="tx:cash">
+                <input name="reason" placeholder="reason" value="rollback">
+                <input name="idempotencyKey" placeholder="idempotency key" value="void-1">
+                <button>Void</button>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-gameplay" class="view">
+          <div class="grid">
+            <section class="panel">
+              <h2>Item</h2>
+              <form id="gameplay-item-form" class="stack">
+                <input name="key" placeholder="item key" value="repair_kit">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="label" placeholder="label" value="Repair Kit">
+                <select name="stackable">
+                  <option value="true">stackable</option>
+                  <option value="false">single</option>
+                </select>
+                <input name="maxStack" placeholder="max stack" value="10">
+                <button>Register Item</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Job</h2>
+              <form id="gameplay-job-form" class="stack">
+                <input name="key" placeholder="job key" value="mechanic">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="label" placeholder="label" value="Mechanic">
+                <input name="grades" placeholder="grades" value="trainee,lead">
+                <button>Register Job</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Vehicle</h2>
+              <form id="gameplay-vehicle-form" class="stack">
+                <input name="model" placeholder="model" value="flatbed">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="label" placeholder="label" value="Flatbed">
+                <input name="category" placeholder="category" value="service">
+                <button>Register Vehicle</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Location</h2>
+              <form id="gameplay-location-form" class="stack">
+                <input name="key" placeholder="location key" value="mechanic_shop">
+                <input name="pluginId" placeholder="plugin id" value="mechanic_core">
+                <input name="label" placeholder="label" value="Mechanic Shop">
+                <input name="x" placeholder="x" value="1">
+                <input name="y" placeholder="y" value="2">
+                <input name="z" placeholder="z" value="3">
+                <button>Register Location</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Inventory</h2>
+              <form id="gameplay-inventory-form" class="stack">
+                <input name="id" placeholder="grant id" value="grant-1">
+                <input name="ownerId" placeholder="owner id" value="char:1">
+                <input name="itemKey" placeholder="item key" value="repair_kit">
+                <input name="quantity" placeholder="quantity" value="2">
+                <button>Grant Item</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Assignment</h2>
+              <form id="gameplay-job-assignment-form" class="stack">
+                <input name="characterId" placeholder="character id" value="char:1">
+                <input name="jobKey" placeholder="job key" value="mechanic">
+                <input name="grade" placeholder="grade" value="trainee">
+                <select name="onDuty">
+                  <option value="true">on duty</option>
+                  <option value="false">off duty</option>
+                </select>
+                <button>Assign Job</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Spawn</h2>
+              <form id="gameplay-vehicle-spawn-form" class="stack">
+                <input name="targetSource" placeholder="player source" value="7">
+                <input name="model" placeholder="model" value="sultan">
+                <input name="label" placeholder="label" value="Sultan">
+                <input name="category" placeholder="category" value="car">
+                <input name="locationKey" placeholder="location key" value="admin_spawn">
+                <input name="locationLabel" placeholder="location label" value="Admin Spawn">
+                <input name="x" placeholder="x" value="1">
+                <input name="y" placeholder="y" value="2">
+                <input name="z" placeholder="z" value="3">
+                <input name="heading" placeholder="heading" value="90">
+                <select name="warpIntoVehicle">
+                  <option value="true">warp into vehicle</option>
+                  <option value="false">spawn nearby</option>
+                </select>
+                <button>Queue Spawn</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Repair</h2>
+              <form id="gameplay-vehicle-repair-form" class="stack">
+                <input name="targetSource" placeholder="player source" value="7">
+                <input name="targetVehicleNetId" placeholder="vehicle net id" value="44">
+                <button>Queue Repair</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Teleport</h2>
+              <form id="gameplay-teleport-form" class="stack">
+                <input name="targetSource" placeholder="player source" value="7">
+                <input name="x" placeholder="x" value="100">
+                <input name="y" placeholder="y" value="200">
+                <input name="z" placeholder="z" value="30">
+                <input name="heading" placeholder="heading" value="90">
+                <button>Queue Teleport</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Kick</h2>
+              <form id="gameplay-kick-form" class="stack">
+                <input name="targetSource" placeholder="player source" value="7">
+                <input name="reason" placeholder="reason" value="Rule violation">
+                <button>Queue Kick</button>
+              </form>
+            </section>
+            <section class="panel">
+              <h2>Snapshot</h2>
+              <button id="refresh-gameplay">Refresh Gameplay</button>
+              <pre id="gameplay-output"></pre>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-audit" class="view">
+          <section class="panel">
+            <h2>Audit</h2>
+            <form id="audit-search-form" class="stack">
+              <input name="actorId" placeholder="actor id">
+              <input name="actionType" placeholder="action type">
+              <input name="status" placeholder="status">
+              <button>Search Audit</button>
+            </form>
+            <pre id="audit-output"></pre>
+          </section>
+        </section>
+
+        <footer id="status"></footer>
+      </section>
+    </main>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

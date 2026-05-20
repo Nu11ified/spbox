@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+cache/
+target/
+spacetimedb/target/
+.env
+.env.*
+!.env.example
+.replxx_history
