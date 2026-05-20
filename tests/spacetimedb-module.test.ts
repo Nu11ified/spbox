@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB Rust module scaffold", () => {
@@ -11,7 +11,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("declares phase 01 runtime tables and reducers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const table of [
       "servers",
@@ -47,7 +47,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank server registration identity before authoritative server insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerServerBody = lib.slice(
       lib.indexOf("pub fn register_server"),
       lib.indexOf("#[reducer]\npub fn heartbeat")
@@ -66,7 +66,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("guards runtime action submission against replay and missing signatures", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("ensure_runtime_action_replay_safe");
     expect(lib).toContain('return Err("action signature is required".to_string())');
@@ -75,7 +75,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("scopes runtime action replay checks to the server", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const submitActionBody = lib.slice(
       lib.indexOf("pub fn submit_action"),
       lib.indexOf("#[reducer]\npub fn complete_action")
@@ -95,7 +95,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("guards runtime action submission against unknown servers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("server must exist before action writes");
     expect(lib.indexOf("server must exist before action writes")).toBeLessThan(
@@ -104,7 +104,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank runtime action envelope fields before replay checks or insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const submitActionBody = lib.slice(
       lib.indexOf("pub fn submit_action"),
       lib.indexOf("fn ensure_runtime_action_replay_safe")
@@ -131,7 +131,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("treats runtime action completion as terminal", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const completeActionBody = lib.slice(
       lib.indexOf("pub fn complete_action"),
       lib.indexOf("#[reducer]\npub fn set_runtime_config")
@@ -145,7 +145,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank runtime action completion ids before action lookup", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const completeActionBody = lib.slice(
       lib.indexOf("pub fn complete_action"),
       lib.indexOf("#[reducer]\npub fn set_runtime_config")
@@ -160,7 +160,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank runtime config identity fields before server lookup or insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const setConfigBody = lib.slice(
       lib.indexOf("pub fn set_runtime_config"),
       lib.indexOf("#[reducer]\npub fn ack_config_version")
@@ -182,7 +182,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("guards audit log writes against unknown servers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("server must exist before audit writes");
     expect(lib.indexOf("server must exist before audit writes")).toBeLessThan(
@@ -191,7 +191,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("guards audit log writes against invalid status values", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const writeAuditLogBody = lib.slice(
       lib.indexOf("pub fn write_audit_log"),
       lib.indexOf("#[reducer]\npub fn register_plugin")
@@ -206,7 +206,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank audit identity fields before server lookup or insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const writeAuditLogBody = lib.slice(
       lib.indexOf("pub fn write_audit_log"),
       lib.indexOf("fn validate_audit_status")
@@ -233,7 +233,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("guards runtime heartbeats against missing signatures and nonce replay", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("ensure_heartbeat_replay_safe");
     expect(lib).toContain('return Err("heartbeat signature is required".to_string())');
@@ -241,7 +241,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("rejects blank heartbeat identity fields before replay checks or runtime instance insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const heartbeatBody = lib.slice(
       lib.indexOf("pub fn heartbeat"),
       lib.indexOf("fn ensure_heartbeat_replay_safe")
@@ -266,7 +266,7 @@ describe("SpacetimeDB Rust module scaffold", () => {
   });
 
   it("updates the server health row when recording a heartbeat", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("record_server_heartbeat(ctx, &server_id)?");
     expect(lib).toContain("server.last_heartbeat_at = ctx.timestamp");

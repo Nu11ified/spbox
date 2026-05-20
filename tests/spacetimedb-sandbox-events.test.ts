@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB sandbox event module surface", () => {
-  const source = () => readFileSync("spacetimedb/src/lib.rs", "utf8");
+  const source = moduleSource;
 
   it("declares plugin sandbox event persistence", () => {
     const lib = source();

@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB plugin registry control-plane tables", () => {
   it("declares package, manifest, runtime instance, and config value tables", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const table of [
       "plugin_packages",
@@ -17,7 +17,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("exposes reducers for packages, manifests, runtime instances, config values, and uninstall", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const reducer of [
       "register_plugin_package",
@@ -33,7 +33,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("guards package, runtime instance, and config reducers against unknown plugins", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("plugin must exist before package writes");
     expect(lib).toContain("plugin must exist before manifest writes");
@@ -43,7 +43,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank plugin registration metadata before inserting plugin rows", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerPluginBody = lib.slice(
       lib.indexOf("pub fn register_plugin"),
       lib.indexOf("#[reducer]\npub fn register_plugin_package")
@@ -67,7 +67,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank package registration metadata before plugin lookup or package writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerPackageBody = lib.slice(
       lib.indexOf("pub fn register_plugin_package"),
       lib.indexOf("fn package_signer_revoked")
@@ -94,7 +94,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects manifest reducer writes for unknown plugins", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerManifestBody = lib.slice(
       lib.indexOf("pub fn register_plugin_manifest"),
       lib.indexOf("#[reducer]\npub fn upsert_plugin_runtime_instance")
@@ -108,7 +108,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank manifest plugin ids before manifest validation or writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerManifestBody = lib.slice(
       lib.indexOf("pub fn register_plugin_manifest"),
       lib.indexOf("#[reducer]\npub fn upsert_plugin_runtime_instance")
@@ -126,7 +126,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("validates manifest json before reducer writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerManifestBody = lib.slice(
       lib.indexOf("pub fn register_plugin_manifest"),
       lib.indexOf("#[reducer]\npub fn upsert_plugin_runtime_instance")
@@ -150,7 +150,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects config reducer writes unless the plugin is active", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain('return Err("plugin must be active before config writes".to_string())');
     expect(lib.indexOf('return Err("plugin must be active before config writes".to_string())')).toBeLessThan(
@@ -160,7 +160,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank config identity fields and unknown servers before config writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const setConfigBody = lib.slice(
       lib.indexOf("pub fn set_plugin_config_value"),
       lib.indexOf("fn validate_plugin_runtime_status")
@@ -182,7 +182,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("guards loaded runtime instances against inactive plugins and unknown servers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain('return Err("server must exist before runtime instance writes".to_string())');
     expect(lib).toContain('return Err("plugin must be active before loading runtime instances".to_string())');
@@ -196,7 +196,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank runtime instance identity fields and lifecycle/error mismatches before writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const runtimeInstanceBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_runtime_instance"),
       lib.indexOf("#[reducer]\npub fn set_plugin_config_value")
@@ -219,7 +219,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects package writes from revoked package signers inside the reducer", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("fn package_signer_revoked");
     expect(lib).toContain('return Err("package signer has been revoked".to_string())');
@@ -229,7 +229,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("disables package-backed plugins inside the package signer revocation reducer", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("fn disable_plugins_for_package_signer");
     expect(lib).toContain("let mut disabled_plugin_ids = disable_plugins_for_package_signer(ctx, &signer_id)?");
@@ -241,7 +241,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank package signer revocation inputs before cascading signer trust changes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const revokeSignerBody = lib.slice(
       lib.indexOf("pub fn revoke_package_signer"),
       lib.indexOf("fn disable_plugins_for_package_signer")
@@ -264,7 +264,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects direct active status writes when package or bundle signers are revoked", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const setStatusBody = lib.slice(
       lib.indexOf("pub fn set_plugin_status"),
       lib.indexOf("#[reducer]\npub fn uninstall_plugin")
@@ -281,7 +281,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("rejects blank plugin ids before status or uninstall reducer mutations", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const setStatusBody = lib.slice(
       lib.indexOf("pub fn set_plugin_status"),
       lib.indexOf("fn plugin_has_revoked_signer")
@@ -304,7 +304,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("revokes signer-owned bundles and kills their live deployments inside signer revocation", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const revokeSignerBody = lib.slice(
       lib.indexOf("pub fn revoke_package_signer"),
       lib.indexOf("fn disable_plugins_for_package_signer")
@@ -323,7 +323,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("upserts package signer revocations so repeated revokes are idempotent", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("let revocation = PluginPackageSignerRevocation");
     expect(lib).toContain("affected_plugin_ids_json: string_list_json(&disabled_plugin_ids)");
@@ -332,7 +332,7 @@ describe("SpacetimeDB plugin registry control-plane tables", () => {
   });
 
   it("uninstall removes plugin-owned runtime rows instead of leaving orphaned state", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const uninstallBody = lib.slice(
       lib.indexOf("pub fn uninstall_plugin"),
       lib.indexOf("#[reducer]\npub fn register_plugin_manifest")

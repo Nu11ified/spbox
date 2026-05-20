@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB plugin data module surface", () => {
-  const source = () => readFileSync("spacetimedb/src/lib.rs", "utf8");
+  const source = moduleSource;
 
   it("declares plugin schema and entity tables", () => {
     const lib = source();

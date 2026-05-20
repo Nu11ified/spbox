@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB gameplay reducer semantics", () => {
-  const source = () => readFileSync("spacetimedb/src/lib.rs", "utf8");
+  const source = moduleSource;
 
   it("grant_item validates item existence and stack limits before mutation", () => {
     const lib = source();

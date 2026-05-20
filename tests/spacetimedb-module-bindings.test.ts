@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";
 import { DbConnection, reducers, tables } from "../src/spacetime/module_bindings/index.js";
@@ -6,7 +6,7 @@ import { DbConnection, reducers, tables } from "../src/spacetime/module_bindings
 const require = createRequire(import.meta.url);
 
 function rustModule(): string {
-  return readFileSync("spacetimedb/src/lib.rs", "utf8");
+  return moduleSource();
 }
 
 function camelCase(value: string): string {

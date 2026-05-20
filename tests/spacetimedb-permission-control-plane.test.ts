@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB permission control-plane tables", () => {
   it("declares permission definitions, cache versions, and ACE mirror rules", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const table of ["permissions", "permission_cache_versions", "ace_mirror_rules"]) {
       expect(lib).toContain(`#[table(name = ${table}, public)]`);
@@ -11,7 +11,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("exposes reducers for permission definitions, cache version acks, and ACE mirror rules", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const reducer of ["register_permission", "ack_permission_cache_version", "upsert_ace_mirror_rule"]) {
       expect(lib).toContain(`pub fn ${reducer}`);
@@ -20,7 +20,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("guards permission reducers against unknown plugins, principals, and permission keys", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     for (const message of [
       "plugin must exist before permission writes",
@@ -40,7 +40,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank permission grant fields before effect validation, lookup, or insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const grantBody = lib.slice(
       lib.indexOf("pub fn grant_permission"),
       lib.indexOf("#[reducer]\npub fn upsert_policy_constraint")
@@ -64,7 +64,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank policy constraint fields before type validation, lookup, or upsert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const policyBody = lib.slice(
       lib.indexOf("pub fn upsert_policy_constraint"),
       lib.indexOf("#[reducer]\npub fn remove_policy_constraint")
@@ -90,7 +90,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank policy constraint removal ids before delete", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const removePolicyBody = lib.slice(
       lib.indexOf("pub fn remove_policy_constraint"),
       lib.indexOf("fn validate_policy_constraint_identity")
@@ -105,7 +105,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank principal identity fields before principal row insertion", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertPrincipalBody = lib.slice(
       lib.indexOf("pub fn upsert_principal"),
       lib.indexOf("#[reducer]\npub fn register_permission")
@@ -123,7 +123,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank permission definition fields before plugin lookup or upsert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerPermissionBody = lib.slice(
       lib.indexOf("pub fn register_permission"),
       lib.indexOf("#[reducer]\npub fn ack_permission_cache_version")
@@ -144,7 +144,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("guards permission cache acknowledgements against unknown servers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const ackBody = lib.slice(
       lib.indexOf("pub fn ack_permission_cache_version"),
       lib.indexOf("#[reducer]\npub fn upsert_ace_mirror_rule")
@@ -158,7 +158,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank permission cache acknowledgement server ids before lookup or upsert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const ackBody = lib.slice(
       lib.indexOf("pub fn ack_permission_cache_version"),
       lib.indexOf("#[reducer]\npub fn upsert_ace_mirror_rule")
@@ -176,7 +176,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank ACE mirror rule fields before mode validation, lookup, or upsert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const aceBody = lib.slice(
       lib.indexOf("pub fn upsert_ace_mirror_rule"),
       lib.indexOf("fn validate_ace_mirror_mode")
@@ -199,7 +199,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("guards principal edge writes against unknown parent or child principals", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("parent principal must exist before edge writes");
     expect(lib).toContain("child principal must exist before edge writes");
@@ -212,7 +212,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank principal edge fields before principal lookup or insert", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const edgeBody = lib.slice(
       lib.indexOf("pub fn add_principal_edge"),
       lib.indexOf("#[reducer]\npub fn remove_principal_edge")
@@ -233,7 +233,7 @@ describe("SpacetimeDB permission control-plane tables", () => {
   });
 
   it("rejects blank principal edge removal ids before delete", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const removeEdgeBody = lib.slice(
       lib.indexOf("pub fn remove_principal_edge"),
       lib.indexOf("#[reducer]\npub fn write_audit_log")

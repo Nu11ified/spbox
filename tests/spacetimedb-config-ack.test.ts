@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB runtime config acknowledgements", () => {
   it("declares config acknowledgement table and reducer", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("#[table(name = runtime_config_acks, public)]");
     expect(lib).toContain("pub struct RuntimeConfigAck");
@@ -11,7 +11,7 @@ describe("SpacetimeDB runtime config acknowledgements", () => {
   });
 
   it("guards acknowledgements against stale or unknown config rows", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain('return Err("unknown config".to_string())');
     expect(lib).toContain('return Err("config version mismatch".to_string())');
@@ -19,7 +19,7 @@ describe("SpacetimeDB runtime config acknowledgements", () => {
   });
 
   it("rejects blank acknowledgement coordinates before config lookup or ack row writes", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const ackBody = lib.slice(
       lib.indexOf("pub fn ack_config_version"),
       lib.indexOf("fn runtime_config_ack_id")
@@ -39,7 +39,7 @@ describe("SpacetimeDB runtime config acknowledgements", () => {
   });
 
   it("guards runtime config writes against unknown servers", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("server must exist before config writes");
     expect(lib.indexOf("server must exist before config writes")).toBeLessThan(

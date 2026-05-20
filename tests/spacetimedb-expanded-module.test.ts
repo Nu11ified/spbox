@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("expanded SpacetimeDB module contract", () => {
-  const lib = () => readFileSync("spacetimedb/src/lib.rs", "utf8");
+  const lib = moduleSource;
 
   it("declares economy tables for accounts, transactions, ledger entries, and invoices", () => {
     const source = lib();

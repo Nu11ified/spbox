@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { moduleSource, readFileSync } from "./spacetimedb-source.js";
 import { describe, expect, it } from "vitest";
 
 describe("SpacetimeDB plugin bundle registry", () => {
   it("declares bundle and capability tables", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("#[table(name = plugin_bundles, public)]");
     expect(lib).toContain("pub struct PluginBundle");
@@ -12,7 +12,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("exposes reducers for bundle metadata and capability declarations", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("pub fn register_plugin_bundle");
     expect(lib).toContain("pub fn revoke_plugin_bundle");
@@ -23,14 +23,14 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("guards capability reducer writes against plugin/bundle ownership mismatches", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("plugin capability bundle mismatch");
     expect(lib).toContain("if bundle.plugin_id != plugin_id");
   });
 
   it("rejects duplicate capability ids instead of replacing signed capability metadata", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertCapabilityBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_capability"),
       lib.indexOf("fn plugin_capability_key_exists")
@@ -45,7 +45,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects blank capability ids before inserting signed capability metadata", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertCapabilityBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_capability"),
       lib.indexOf("fn plugin_capability_key_exists")
@@ -60,7 +60,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects blank capability plugin and bundle ids before ownership lookup", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertCapabilityBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_capability"),
       lib.indexOf("fn plugin_capability_key_exists")
@@ -76,7 +76,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects duplicate capability keys within the same bundle", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("plugin capability key already exists for bundle");
     expect(lib).toContain("fn plugin_capability_key_exists");
@@ -87,7 +87,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects blank and forbidden direct database sandbox capability keys", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertCapabilityBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_capability"),
       lib.indexOf("fn plugin_capability_key_exists")
@@ -108,7 +108,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects non-empty capability constraints unless they are JSON objects", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertCapabilityBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_capability"),
       lib.indexOf("fn plugin_capability_key_exists")
@@ -126,7 +126,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects malformed known capability constraint fields inside JSON objects", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const constraintsValidatorBody = lib.slice(
       lib.indexOf("fn validate_plugin_capability_constraints_json"),
       lib.indexOf("fn validate_plugin_capability_payload_limit_constraints")
@@ -148,7 +148,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects malformed economy capability constraint fields inside JSON objects", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const constraintsValidatorBody = lib.slice(
       lib.indexOf("fn validate_plugin_capability_constraints_json"),
       lib.indexOf("fn validate_plugin_capability_payload_limit_constraints")
@@ -170,7 +170,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects enabled capabilities for inactive plugins or non-registered bundles", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain('return Err("plugin must be active before enabled capability writes".to_string())');
     expect(lib).toContain('return Err("plugin bundle must be registered before enabled capability writes".to_string())');
@@ -185,7 +185,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("guards bundle reducer writes against unknown plugins", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("plugin must exist before bundle writes");
     expect(lib.indexOf("plugin must exist before bundle writes")).toBeLessThan(
@@ -194,7 +194,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects bundle registration from revoked package signers inside the reducer", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerBundleBody = lib.slice(
       lib.indexOf("pub fn register_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn revoke_plugin_bundle")
@@ -208,7 +208,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("requires bundle registration to create registered bundles with signed metadata", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerBundleBody = lib.slice(
       lib.indexOf("pub fn register_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn revoke_plugin_bundle")
@@ -236,7 +236,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects bundle hashes without an explicit sha256 algorithm prefix before registration", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerBundleBody = lib.slice(
       lib.indexOf("pub fn register_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn revoke_plugin_bundle")
@@ -254,7 +254,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("disables plugin capabilities when plugins become inactive", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("set_plugin_capabilities_enabled(ctx, &plugin_id, false);");
     expect(lib).toContain("capability.status = if enabled { \"enabled\" } else { \"disabled\" }.to_string();");
@@ -264,7 +264,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects duplicate bundle ids instead of replacing signed bundle metadata", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const registerBundleBody = lib.slice(
       lib.indexOf("pub fn register_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn revoke_plugin_bundle")
@@ -279,7 +279,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("exposes a dedicated reducer for revoking existing bundles", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("pub fn revoke_plugin_bundle");
     expect(lib).toContain("actor_id: String");
@@ -290,7 +290,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects blank bundle revocation actors and reasons before mutating bundles", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const revokeBundleBody = lib.slice(
       lib.indexOf("pub fn revoke_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn upsert_plugin_capability")
@@ -310,7 +310,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("bundle revocation disables bundle capabilities and kills live deployments", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const revokeBundleBody = lib.slice(
       lib.indexOf("pub fn revoke_plugin_bundle"),
       lib.indexOf("#[reducer]\npub fn upsert_plugin_capability")
@@ -331,7 +331,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("guards deployment reducer writes against unknown or mismatched control-plane rows", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain("plugin must exist before deployment writes");
     expect(lib).toContain("plugin bundle must exist before deployment writes");
@@ -346,7 +346,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects blank deployment identity fields before control-plane lookups", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertDeploymentBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_deployment"),
       lib.indexOf("fn validate_plugin_status")
@@ -364,7 +364,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects active deployments for inactive plugins or non-registered bundles", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
 
     expect(lib).toContain('return Err("plugin must be active before active deployment writes".to_string())');
     expect(lib).toContain('return Err("plugin bundle must be registered before active deployment writes".to_string())');
@@ -384,7 +384,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rolls back existing active deployments for the same plugin and server before activating a new one", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertDeploymentBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_deployment"),
       lib.indexOf("fn validate_plugin_status")
@@ -404,7 +404,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects deployment upserts that try to move an existing deployment id", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertDeploymentBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_deployment"),
       lib.indexOf("fn validate_plugin_status")
@@ -420,7 +420,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects active and pending deployment writes with versions that do not match the bundle", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertDeploymentBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_deployment"),
       lib.indexOf("fn validate_plugin_status")
@@ -438,7 +438,7 @@ describe("SpacetimeDB plugin bundle registry", () => {
   });
 
   it("rejects deployment writes with error metadata inconsistent with lifecycle status", () => {
-    const lib = readFileSync("spacetimedb/src/lib.rs", "utf8");
+    const lib = moduleSource();
     const upsertDeploymentBody = lib.slice(
       lib.indexOf("pub fn upsert_plugin_deployment"),
       lib.indexOf("fn validate_plugin_status")
