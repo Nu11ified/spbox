@@ -6,6 +6,8 @@ import { buildLegacySqlImportManifest } from "../dist/src/core/sql-compat.js";
 const root = process.cwd();
 const demoRoot = process.env.SDB_QBCORE_DEMO_ROOT ?? join(root, "cache", "qbcore-demo");
 const resourcesRoot = join(demoRoot, "resources");
+const systemResourcesRoot = process.env.SDB_FXSERVER_SYSTEM_RESOURCES ??
+  "/tmp/spbox-fxserver-smoke/fx/alpine/opt/cfx-server/citizen/system_resources";
 
 const upstream = [
   ["standalone", "PolyZone", "https://github.com/mkafrin/PolyZone.git", "0f9003080706d61ff29b9b3db5332d407632d4df"],
@@ -35,6 +37,7 @@ copyResource("resources/[runtime]/sdb_runtime", join(resourcesRoot, "[spbox]", "
 for (const name of ["qb-core", "oxmysql", "qb-inventory", "menuv"]) {
   copyResource(`resources/[compat]/${name}`, join(resourcesRoot, "[compat]", name));
 }
+copySystemResource("chat", join(resourcesRoot, "[standalone]", "chat"));
 
 const installedResources = [];
 for (const [group, name, url, sha] of upstream) {
@@ -92,6 +95,27 @@ function copyResource(source, destination) {
   });
 }
 
+function copySystemResource(name, destination) {
+  const source = join(systemResourcesRoot, name);
+  if (!statExists(source)) {
+    console.warn(`Skipping optional CFX system resource ${name}; not found at ${source}`);
+    return;
+  }
+
+  cpSync(source, destination, {
+    recursive: true,
+    force: true
+  });
+}
+
+function statExists(path) {
+  try {
+    return statSync(path).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd ?? root,
@@ -121,6 +145,9 @@ function findSqlFiles(directory) {
 
 function serverConfig() {
   return `sv_hostname "SPBox QBCore Hybrid Demo"
+sets sv_projectName "SPBox QBCore Hybrid Demo"
+sets sv_projectDesc "A QBCore-style server powered by SPBox and SpacetimeDB"
+sets tags "spbox,qbcore,qbox,roleplay,spacetimedb"
 endpoint_add_tcp "0.0.0.0:30120"
 endpoint_add_udp "0.0.0.0:30120"
 sv_maxclients 8
@@ -129,6 +156,7 @@ set sdb_server_id "spbox-demo"
 set sdb_admin_endpoint "http://127.0.0.1:8787"
 set sdb_poc_admin_endpoint "http://127.0.0.1:8787"
 
+ensure chat
 ensure sdb_runtime
 ensure oxmysql
 ensure qb-core

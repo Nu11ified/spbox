@@ -32,6 +32,7 @@ It also scans upstream `.sql` files and writes `spbox-sql-manifest.json`. That m
 Use the generated `cache/qbcore-demo/server.cfg` as the starting point. The important order is:
 
 ```cfg
+ensure chat
 ensure sdb_runtime
 ensure oxmysql
 ensure qb-core

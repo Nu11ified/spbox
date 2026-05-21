@@ -313,7 +313,13 @@ local function BuildDefaultQbPlayerData(target)
       z = 0.0,
       w = 0.0
     },
-    metadata = {},
+    metadata = {
+      hunger = 100,
+      thirst = 100,
+      inside = {
+        apartment = {}
+      }
+    },
     items = {}
   }
 end

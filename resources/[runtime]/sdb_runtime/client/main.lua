@@ -49,7 +49,13 @@ local function BuildDefaultQbPlayerData()
       z = coords.z,
       w = GetEntityHeading(PlayerPedId())
     },
-    metadata = {},
+    metadata = {
+      hunger = 100,
+      thirst = 100,
+      inside = {
+        apartment = {}
+      }
+    },
     items = {}
   }
 end

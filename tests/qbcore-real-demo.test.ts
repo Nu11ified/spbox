@@ -72,11 +72,13 @@ describe("real QBCore hybrid demo resources", () => {
 
     expect(script).toContain('"oxmysql"');
     expect(script).toContain('"menuv"');
+    expect(script).toContain('copySystemResource("chat"');
     expect(script).toContain("buildLegacySqlImportManifest");
     expect(script).toContain("spbox-sql-manifest.json");
     expect(read("scripts/import-legacy-sql.mjs")).toContain("buildLegacySqlImportManifest");
     expect(read("resources/[compat]/menuv/menuv.lua")).toContain("function MenuV:CreateMenu");
     expect(script).toContain("ensure qb-multicharacter");
+    expect(script).toContain("ensure chat");
     expect(script).toContain("ensure qb-clothing");
     expect(script).toContain("ensure qb-adminmenu");
     expect(packageJson).toContain('"install:qbcore-demo": "npm run build && node scripts/install-qbcore-demo-resources.mjs"');
