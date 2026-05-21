@@ -25,6 +25,10 @@ SPBox currently includes:
 - A real QBCore hybrid demo installer using pinned upstream QBCore resources.
 - Test coverage for core behavior, compatibility facades, SpacetimeDB adapters, deployment checks, and migration tooling.
 
+## Setup
+
+See [docs/server-setup.md](./docs/server-setup.md) for server setup, SpacetimeDB/admin connector boot, native SPBox plugins, QBCore plugins, Qbox plugins, and legacy SQL compatibility.
+
 ## Parity
 
 The project is working toward full practical QBCore and Qbox parity. Common framework surfaces are covered, and representative QBCore/Qbox compatibility fixtures are tested. Some third-party resources may still depend on undocumented framework behavior or unusual SQL patterns.
