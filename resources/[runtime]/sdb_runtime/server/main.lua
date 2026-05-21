@@ -736,6 +736,26 @@ local function AttachQbPlayerFunctions(player)
     return true
   end
 
+  player.GetMoney = player.Functions.GetMoney
+  player.AddMoney = player.Functions.AddMoney
+  player.RemoveMoney = player.Functions.RemoveMoney
+  player.SetMoney = player.Functions.SetMoney
+  player.GetItemByName = player.Functions.GetItemByName
+  player.HasItem = player.Functions.HasItem
+  player.AddItem = player.Functions.AddItem
+  player.RemoveItem = player.Functions.RemoveItem
+  player.UpdatePlayerData = player.Functions.UpdatePlayerData
+  player.SetPlayerData = player.Functions.SetPlayerData
+  player.Save = player.Functions.Save
+  player.Logout = player.Functions.Logout
+  player.SetMetaData = player.Functions.SetMetaData
+  player.GetMetaData = player.Functions.GetMetaData
+  player.SetJob = player.Functions.SetJob
+  player.SetJobDuty = player.Functions.SetJobDuty
+  player.SetGang = player.Functions.SetGang
+  player.AddMethod = player.Functions.AddMethod
+  player.AddField = player.Functions.AddField
+
   return player
 end
 

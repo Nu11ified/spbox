@@ -227,11 +227,11 @@ local function selectRows(sql, params)
   if sql:find('from player_outfits where citizenid = ?', 1, true) then
     return filter('player_outfits', function(row) return row.citizenid == param(params, 1) end)
   end
-  if sql:find('from apartments where name = ?', 1, true) then
-    return filter('apartments', function(row) return row.name == param(params, 1) end)
-  end
   if sql:find('count(*) as count from apartments where name = ?', 1, true) then
     return { { count = #filter('apartments', function(row) return row.name == param(params, 1) end) } }
+  end
+  if sql:find('from apartments where name = ?', 1, true) then
+    return filter('apartments', function(row) return row.name == param(params, 1) end)
   end
   if sql:find('from apartments where citizenid = ?', 1, true) then
     return filter('apartments', function(row) return row.citizenid == param(params, 1) end)

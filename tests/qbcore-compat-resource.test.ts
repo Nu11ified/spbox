@@ -386,6 +386,12 @@ describe("QBCore compatibility resource facade", () => {
     expect(server).toContain("if IsBlankString(fieldName) then");
     expect(server).toContain("player.Functions[methodName] = handler");
     expect(server).toContain("player[fieldName] = value");
+    expect(server).toContain("player.SetMetaData = player.Functions.SetMetaData");
+    expect(server).toContain("player.GetMetaData = player.Functions.GetMetaData");
+    expect(server).toContain("player.SetPlayerData = player.Functions.SetPlayerData");
+    expect(server).toContain("player.UpdatePlayerData = player.Functions.UpdatePlayerData");
+    expect(server).toContain("player.AddMoney = player.Functions.AddMoney");
+    expect(server).toContain("player.AddItem = player.Functions.AddItem");
     expect(server).toContain("RefreshQbPlayerPosition(player)");
     expect(server).toContain("QueueQbCharacterUpdate(player.PlayerData.source, player.PlayerData)");
     expect(server).toContain("TriggerClientEvent('QBCore:Client:OnJobUpdate', player.PlayerData.source, player.PlayerData.job)");

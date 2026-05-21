@@ -23,6 +23,9 @@ describe("real QBCore hybrid demo resources", () => {
     expect(mysqlServer).toContain("exports('SpboxExecute', Execute)");
     expect(mysqlServer).toContain("exports('SpboxUpsertRow', UpsertRow)");
     expect(mysqlServer).toContain("exports('SpboxSelectRows', SelectRows)");
+    expect(mysqlServer.indexOf("count(*) as count from apartments where name = ?")).toBeLessThan(
+      mysqlServer.indexOf("from apartments where name = ?")
+    );
 
     expect(inventoryManifest).toContain("dependency 'sdb_runtime'");
     expect(inventoryServer).toContain("exports.sdb_runtime:GetQbPlayer(source)");
