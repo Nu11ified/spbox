@@ -29,6 +29,14 @@ end
 
 local function EnsureSharedHelpers()
   QBCore.Shared = QBCore.Shared or exports.sdb_runtime:GetQbShared()
+  QBCore.Shared.Items = QBCore.Shared.Items or {}
+  QBCore.Shared.Jobs = QBCore.Shared.Jobs or {}
+  QBCore.Shared.Gangs = QBCore.Shared.Gangs or {}
+  QBCore.Shared.Vehicles = QBCore.Shared.Vehicles or {}
+  QBCore.Shared.Weapons = QBCore.Shared.Weapons or {}
+  QBCore.Shared.StarterItems = QBCore.Shared.StarterItems or {}
+  QBCore.Shared.MoneyTypes = QBCore.Shared.MoneyTypes or { cash = 500, bank = 5000, crypto = 0 }
+  QBCore.Shared.DefaultMetadata = QBCore.Shared.DefaultMetadata or {}
 
   function QBCore.Shared.Trim(value)
     if type(value) ~= 'string' then

@@ -16,6 +16,7 @@ local function EnsureSharedDefaults()
   QBCore.Shared.Jobs = QBCore.Shared.Jobs or {}
   QBCore.Shared.Gangs = QBCore.Shared.Gangs or {}
   QBCore.Shared.Vehicles = QBCore.Shared.Vehicles or {}
+  QBCore.Shared.Weapons = QBCore.Shared.Weapons or {}
   QBCore.Shared.StarterItems = QBCore.Shared.StarterItems or {}
   QBCore.Shared.MoneyTypes = QBCore.Shared.MoneyTypes or { cash = 500, bank = 5000, crypto = 0 }
   QBCore.Shared.DefaultMetadata = QBCore.Shared.DefaultMetadata or {}
@@ -30,6 +31,19 @@ local function EnsureSharedDefaults()
 end
 
 EnsureSharedDefaults()
+
+local function getShared(name)
+  EnsureSharedDefaults()
+  if name == nil then
+    return QBCore.Shared
+  end
+
+  return QBCore.Shared[name] or QBCore.Shared[name:sub(1, 1):upper() .. name:sub(2)]
+end
+
+function QBCore.Functions.GetShared(name)
+  return getShared(name)
+end
 
 local function DistanceBetween(left, right)
   local dx = (left.x or 0.0) - (right.x or 0.0)
@@ -80,6 +94,29 @@ function QBCore.Functions.Notify(text, textType, length, icon)
     textType = textType or 'primary',
     length = length or 5000,
     icon = icon
+  })
+end
+
+function QBCore.Functions.DrawText(text, position)
+  SendNUIMessage({
+    action = 'DRAW_TEXT',
+    type = 'QBCore:DrawText',
+    text = text or '',
+    position = position or 'left'
+  })
+end
+
+function QBCore.Functions.HideText()
+  SendNUIMessage({
+    action = 'HIDE_TEXT',
+    type = 'QBCore:HideText'
+  })
+end
+
+function QBCore.Functions.KeyPressed()
+  SendNUIMessage({
+    action = 'KEY_PRESSED',
+    type = 'QBCore:KeyPressed'
   })
 end
 
@@ -416,4 +453,20 @@ end)
 
 exports('GetPlayerData', function()
   return QBCore.Functions.GetPlayerData()
+end)
+
+exports('GetShared', function(name)
+  return getShared(name)
+end)
+
+exports('DrawText', function(text, position)
+  return QBCore.Functions.DrawText(text, position)
+end)
+
+exports('HideText', function()
+  return QBCore.Functions.HideText()
+end)
+
+exports('KeyPressed', function()
+  return QBCore.Functions.KeyPressed()
 end)

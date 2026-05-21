@@ -18,6 +18,7 @@ local Runtime = {
     Jobs = {},
     Gangs = {},
     Vehicles = {},
+    Weapons = {},
     StarterItems = {},
     MoneyTypes = { cash = 500, bank = 5000, crypto = 0 },
     DefaultMetadata = {}
@@ -163,6 +164,7 @@ local function SyncQbShared(shared)
   Runtime.qbShared.Jobs = shared.jobs or shared.Jobs or Runtime.qbShared.Jobs
   Runtime.qbShared.Gangs = shared.gangs or shared.Gangs or Runtime.qbShared.Gangs
   Runtime.qbShared.Vehicles = shared.vehicles or shared.Vehicles or Runtime.qbShared.Vehicles
+  Runtime.qbShared.Weapons = shared.weapons or shared.Weapons or Runtime.qbShared.Weapons
   Runtime.qbShared.StarterItems = shared.starterItems or shared.StarterItems or Runtime.qbShared.StarterItems
   Runtime.qbShared.MoneyTypes = shared.moneyTypes or shared.MoneyTypes or Runtime.qbShared.MoneyTypes
   Runtime.qbShared.DefaultMetadata = shared.defaultMetadata or shared.DefaultMetadata or Runtime.qbShared.DefaultMetadata

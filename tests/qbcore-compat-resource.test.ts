@@ -164,6 +164,7 @@ describe("QBCore compatibility resource facade", () => {
     expect(client).toContain("QBCore.Shared.Jobs = QBCore.Shared.Jobs or {}");
     expect(client).toContain("QBCore.Shared.Gangs = QBCore.Shared.Gangs or {}");
     expect(client).toContain("QBCore.Shared.Vehicles = QBCore.Shared.Vehicles or {}");
+    expect(client).toContain("QBCore.Shared.Weapons = QBCore.Shared.Weapons or {}");
     expect(client).toContain("QBCore.Shared.StarterItems = QBCore.Shared.StarterItems or {}");
     expect(client).toContain("QBCore.Shared.MoneyTypes = QBCore.Shared.MoneyTypes or { cash = 500, bank = 5000, crypto = 0 }");
     expect(client).toContain("QBCore.Shared.DefaultMetadata = QBCore.Shared.DefaultMetadata or {}");
@@ -177,6 +178,13 @@ describe("QBCore compatibility resource facade", () => {
     expect(client).toContain("function QBCore.Functions.Notify(text, textType, length, icon)");
     expect(client).toContain("SendNUIMessage({");
     expect(client).toContain("type = 'QBCore:Notify'");
+    expect(client).toContain("function QBCore.Functions.GetShared(name)");
+    expect(client).toContain("function QBCore.Functions.DrawText(text, position)");
+    expect(client).toContain("action = 'DRAW_TEXT'");
+    expect(client).toContain("function QBCore.Functions.HideText()");
+    expect(client).toContain("action = 'HIDE_TEXT'");
+    expect(client).toContain("function QBCore.Functions.KeyPressed()");
+    expect(client).toContain("action = 'KEY_PRESSED'");
     expect(client).toContain("function QBCore.Functions.HasItem(itemName, amount)");
     expect(client).toContain("for _, item in ipairs((QBCore.PlayerData and QBCore.PlayerData.items) or {}) do");
     expect(client).toContain("function QBCore.Functions.Progressbar(name, label, duration, useWhileDead, canCancel, disableControls, animation, prop, propTwo, onFinish, onCancel)");
@@ -221,6 +229,10 @@ describe("QBCore compatibility resource facade", () => {
     expect(client).toContain("QBCore.Shared = shared or exports.sdb_runtime:GetQbShared()");
     expect(client).toContain("exports('GetCoreObject', function()");
     expect(client).toContain("exports('GetPlayerData', function()");
+    expect(client).toContain("exports('GetShared', function(name)");
+    expect(client).toContain("exports('DrawText', function(text, position)");
+    expect(client).toContain("exports('HideText', function()");
+    expect(client).toContain("exports('KeyPressed', function()");
   });
 
   it("adds runtime exports used by the compatibility facade", () => {
@@ -233,6 +245,7 @@ describe("QBCore compatibility resource facade", () => {
     expect(server).toContain("Jobs = {}");
     expect(server).toContain("Gangs = {}");
     expect(server).toContain("Vehicles = {}");
+    expect(server).toContain("Weapons = {}");
     expect(server).toContain("StarterItems = {}");
     expect(server).toContain("MoneyTypes = { cash = 500, bank = 5000, crypto = 0 }");
     expect(server).toContain("DefaultMetadata = {}");
@@ -282,6 +295,7 @@ describe("QBCore compatibility resource facade", () => {
     expect(server).toContain("local function GetQbShared()");
     expect(server).toContain("local function SyncQbShared(shared)");
     expect(server).toContain("Runtime.qbShared.Items = shared.items or shared.Items or Runtime.qbShared.Items");
+    expect(server).toContain("Runtime.qbShared.Weapons = shared.weapons or shared.Weapons or Runtime.qbShared.Weapons");
     expect(server).toContain("TriggerClientEvent('QBCore:Shared:Update', -1, Runtime.qbShared)");
     expect(server).toContain("local function GetPermissions(source)");
     expect(server).toContain("return principalPermissions");
